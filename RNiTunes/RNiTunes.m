@@ -103,6 +103,8 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     double currentPlaybackTime = (double) [musicPlayer currentPlaybackTime];
     NSNumber *currentPlayTime = [NSNumber numberWithInt:currentPlaybackTime];
     
+    NSNumber *indexOfNowPlayingItem = [NSNumber numberWithInteger:[musicPlayer indexOfNowPlayingItem]];
+    
     if (title == nil) {
         title = @"";
     }
@@ -123,7 +125,7 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     }
     
     NSDictionary *track = [NSDictionary dictionary];
-    track = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64};
+    track = @{@"index":indexOfNowPlayingItem, @"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64};
     
     successCallback(@[[NSNull null], track]);
 }
