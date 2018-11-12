@@ -78,6 +78,11 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer];
     MPMediaItem *song = [musicPlayer nowPlayingItem];
     
+    if (song == nil) {
+        successCallback(@[[NSNull null], [NSNull null]]);
+        return;
+    }
+    
     NSString *title = [song valueForProperty: MPMediaItemPropertyTitle]; // filterable
     NSString *albumTitle = [song valueForProperty: MPMediaItemPropertyAlbumTitle]; // filterable
     NSString *albumArtist = [song valueForProperty: MPMediaItemPropertyAlbumArtist]; // filterable
@@ -97,6 +102,25 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     
     double currentPlaybackTime = (double) [musicPlayer currentPlaybackTime];
     NSNumber *currentPlayTime = [NSNumber numberWithInt:currentPlaybackTime];
+    
+    if (title == nil) {
+        title = @"";
+    }
+    if (albumTitle == nil) {
+        albumTitle = @"";
+    }
+    if (albumArtist == nil) {
+        albumArtist = @"";
+    }
+    if (genre == nil) {
+        genre = @"";
+    }
+    if (duration == nil) {
+        duration = @"0";
+    }
+    if (playCount == nil) {
+        playCount = @"0";
+    }
     
     NSDictionary *track = [NSDictionary dictionary];
     track = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64};
