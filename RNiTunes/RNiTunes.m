@@ -19,6 +19,8 @@
 
 }
 
+NSMutableArray *playlist;
+
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(getArtists:(NSDictionary *)params successCallback:(RCTResponseSenderBlock)successCallback) {
@@ -103,7 +105,28 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     double currentPlaybackTime = (double) [musicPlayer currentPlaybackTime];
     NSNumber *currentPlayTime = [NSNumber numberWithInt:currentPlaybackTime];
     
-    NSNumber *indexOfNowPlayingItem = [NSNumber numberWithInteger:[musicPlayer indexOfNowPlayingItem]];
+    NSUInteger indexOfNowPlayingItem = [musicPlayer indexOfNowPlayingItem];
+    
+    NSDictionary *prevTrack = [NSDictionary dictionary];
+    if (indexOfNowPlayingItem > 0) {
+        MPMediaItem *prevSong = [playlist objectAtIndex:indexOfNowPlayingItem - 1];
+        NSString *prevTitle = [prevSong valueForProperty: MPMediaItemPropertyTitle];
+        NSString *prevAlbumArtist = [prevSong valueForProperty: MPMediaItemPropertyAlbumArtist];
+        prevTrack = @{@"title":prevTitle, @"albumArtist": prevAlbumArtist};
+    } else {
+        prevTrack = [NSNull null];
+    }
+    
+    
+    NSDictionary *nextTrack = [NSDictionary dictionary];
+    if (playlist.count > indexOfNowPlayingItem + 1) {
+        MPMediaItem *nextSong = [playlist objectAtIndex:indexOfNowPlayingItem + 1];
+        NSString *nextTitle = [nextSong valueForProperty: MPMediaItemPropertyTitle];
+        NSString *nextAlbumArtist = [nextSong valueForProperty: MPMediaItemPropertyAlbumArtist];
+        nextTrack = @{@"title":nextTitle, @"albumArtist": nextAlbumArtist};
+    } else {
+        nextTrack = [NSNull null];
+    }
     
     if (title == nil) {
         title = @"";
@@ -125,7 +148,7 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     }
     
     NSDictionary *track = [NSDictionary dictionary];
-    track = @{@"index":indexOfNowPlayingItem, @"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64};
+    track = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64, @"prevTrack": prevTrack, @"nextTrack": nextTrack};
     
     successCallback(@[[NSNull null], track]);
 }
@@ -596,7 +619,7 @@ RCT_EXPORT_METHOD(playTrack:(NSDictionary *)trackItem callback:(RCTResponseSende
 RCT_EXPORT_METHOD(playTracks:(NSArray *)tracks successCallback:(RCTResponseSenderBlock)successCallback) {
     NSLog(@"%@ %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
     
-    NSMutableArray *playlist = [[NSMutableArray alloc] initWithCapacity:0];
+    playlist = [[NSMutableArray alloc] initWithCapacity:0];
     
     for(int i = 0; i < [tracks count]; i++) {
         NSDictionary *query = [tracks objectAtIndex: i];
