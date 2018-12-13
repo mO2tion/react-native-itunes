@@ -112,6 +112,12 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
         MPMediaItem *prevSong = [playlist objectAtIndex:indexOfNowPlayingItem - 1];
         NSString *prevTitle = [prevSong valueForProperty: MPMediaItemPropertyTitle];
         NSString *prevAlbumArtist = [prevSong valueForProperty: MPMediaItemPropertyAlbumArtist];
+        if (prevTitle == nil) {
+            prevTitle = @"";
+        }
+        if (prevAlbumArtist == nil) {
+            prevAlbumArtist = @"";
+        }
         prevTrack = @{@"title":prevTitle, @"albumArtist": prevAlbumArtist};
     } else {
         prevTrack = [NSNull null];
@@ -123,6 +129,12 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
         MPMediaItem *nextSong = [playlist objectAtIndex:indexOfNowPlayingItem + 1];
         NSString *nextTitle = [nextSong valueForProperty: MPMediaItemPropertyTitle];
         NSString *nextAlbumArtist = [nextSong valueForProperty: MPMediaItemPropertyAlbumArtist];
+        if (nextTitle == nil) {
+            nextTitle = @"";
+        }
+        if (nextAlbumArtist == nil) {
+            nextAlbumArtist = @"";
+        }
         nextTrack = @{@"title":nextTitle, @"albumArtist": nextAlbumArtist};
     } else {
         nextTrack = [NSNull null];
@@ -631,7 +643,7 @@ RCT_EXPORT_METHOD(playTracks:(NSArray *)tracks successCallback:(RCTResponseSende
             NSString *searchTitle = [query objectForKey:@"title"];
             [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchTitle forProperty:MPMediaItemPropertyTitle comparisonType:MPMediaPredicateComparisonContains]];
         }
-        if ([query objectForKey:@"albumArtist"] != nil) {
+        if ([query objectForKey:@"albumArtist"] != nil && [[query objectForKey:@"albumArtist"] length] > 0) {
             NSString *searchalbumArtist = [query objectForKey:@"albumArtist"];
             [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchalbumArtist forProperty:MPMediaItemPropertyAlbumArtist comparisonType:MPMediaPredicateComparisonContains]];
         }
