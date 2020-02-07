@@ -637,17 +637,25 @@ RCT_EXPORT_METHOD(playTracks:(NSArray *)tracks successCallback:(RCTResponseSende
         
         if ([query objectForKey:@"title"] != nil) {
             NSString *searchTitle = [query objectForKey:@"title"];
-            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchTitle forProperty:MPMediaItemPropertyTitle comparisonType:MPMediaPredicateComparisonContains]];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchTitle forProperty:MPMediaItemPropertyTitle comparisonType:MPMediaPredicateComparisonEqualTo]];
         }
         if ([query objectForKey:@"albumArtist"] != nil && [[query objectForKey:@"albumArtist"] length] > 0) {
             NSString *searchalbumArtist = [query objectForKey:@"albumArtist"];
-            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchalbumArtist forProperty:MPMediaItemPropertyAlbumArtist comparisonType:MPMediaPredicateComparisonContains]];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchalbumArtist forProperty:MPMediaItemPropertyAlbumArtist comparisonType:MPMediaPredicateComparisonEqualTo]];
+        }
+        if ([query objectForKey:@"albumTitle"] != nil && [[query objectForKey:@"albumTitle"] length] > 0) {
+            NSNumber *searchAlbumTitle = [query objectForKey:@"albumTitle"];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchAlbumTitle forProperty:MPMediaItemPropertyAlbumTitle comparisonType:MPMediaPredicateComparisonEqualTo]];
+        }
+        if ([query objectForKey:@"genre"] != nil && [[query objectForKey:@"genre"] length] > 0) {
+            NSNumber *searchGenre = [query objectForKey:@"genre"];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchGenre forProperty:MPMediaItemPropertyGenre comparisonType:MPMediaPredicateComparisonEqualTo]];
         }
         
         for (MPMediaItem *song in songsQuery.items) {
             
             [playlist addObject: song];
-        
+            
         }
     }
     
