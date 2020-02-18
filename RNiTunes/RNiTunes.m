@@ -651,11 +651,9 @@ RCT_EXPORT_METHOD(playTracks:(NSArray *)tracks successCallback:(RCTResponseSende
             NSNumber *searchGenre = [query objectForKey:@"genre"];
             [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchGenre forProperty:MPMediaItemPropertyGenre comparisonType:MPMediaPredicateComparisonEqualTo]];
         }
-        
-        for (MPMediaItem *song in songsQuery.items) {
-            
-            [playlist addObject: song];
-            
+
+        if (songsQuery.items.count > 0) {
+            [playlist addObject: [songsQuery.items objectAtIndex:0]];
         }
     }
     
